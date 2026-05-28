@@ -22,7 +22,7 @@
   
   --neon-pink:#ff3b9a;
   --neon-cyan:#00d4ff;
-  --neon-purple:#a855f7;
+  --neon-purple:#d946ef;
   --neon-green:#00ff88;
   
   --grad-warm:linear-gradient(135deg, #ff6b6b 0%, #ff3b9a 50%, #a855f7 100%);
@@ -149,13 +149,13 @@ body{
 .nc-main{flex:1;min-width:0;}
 
 .nc-title{
-  font-size:15px;font-weight:500;
+  font-size:16px;font-weight:500;
   margin-bottom:4px;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis;
 }
 
 .nc-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.nc-date{font-size:11px;color:var(--text3);}
+.nc-date{font-size:11px;color:var(--text2);}
 .nc-tag{
   font-size:10px;font-weight:500;
   padding:3px 9px;border-radius:18px;
@@ -171,8 +171,8 @@ body{
 .nc-ctx:active{color:var(--neon-cyan);}
 
 /* items */
-.nc-items{padding:8px 0 6px 28px;display:flex;flex-direction:column;gap:5px;}
-.ni{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.5;}
+.nc-items{padding:8px 0 6px 20px;display:flex;flex-direction:column;gap:5px;}
+.ni{display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.5;}
 
 .ni-chk{
   width:16px;height:16px;border-radius:4px;flex-shrink:0;margin-top:3px;
@@ -205,11 +205,11 @@ body{
 .nc-addbtn{
   font-size:11px;color:var(--text3);background:none;border:none;
   cursor:pointer;display:flex;align-items:center;gap:4px;
-  padding:4px 0 2px 28px;transition:color .2s;margin-top:2px;
+  padding:4px 0 2px 20px;transition:color .2s;margin-top:2px;
 }
 .nc-addbtn:hover{color:var(--neon-cyan);}
 
-.nc-rem{display:flex;align-items:center;gap:5px;padding:0 0 4px 28px;font-size:10px;color:rgba(255,153,0,0.8);}
+.nc-rem{display:flex;align-items:center;gap:5px;padding:0 0 4px 20px;font-size:10px;color:rgba(255,153,0,0.8);}
 
 /* ━━━ CALENDAR ━━━ */
 .cw{padding:12px 16px 100px;position:relative;z-index:1;}
@@ -236,7 +236,7 @@ body{
 
 .cdays{display:grid;grid-template-columns:repeat(7,1fr);}
 .cday{
-  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:2px;cursor:pointer;transition:all .15s;
 }
 .cday:hover{background:rgba(0,212,255,0.08);}
@@ -533,10 +533,10 @@ body{
         <select class="fsel" id="iRemRep"><option value="once">Once</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
       </div>
     </div>
-    <div style="padding:4px 20px;font-size:10px;color:var(--text3);margin-top:4px;">ATTACHMENTS</div>
+    <div style="padding:4px 20px;font-size:10px;color:var(--text3);margin-top:4px;">IMAGES</div>
     <div class="ag" id="attachGrid"></div>
-    <div class="aa" onclick="document.getElementById('fileInput').click()">+ Add photo, image, or document</div>
-    <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" multiple style="display:none" onchange="handleFiles(event)">
+    <div class="aa" onclick="document.getElementById('fileInput').click()">+ Add photo or image</div>
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none" onchange="handleFiles(event)">
     <div class="ma"><button class="btn-cancel" onclick="closeDetailModal()">Cancel</button><button class="btn-save" onclick="saveDetail()">Save</button></div>
   </div>
 </div>
@@ -565,6 +565,14 @@ body{
   <div class="ci" onclick="ctxShare()">↑ Share</div>
   <div class="ci" onclick="ctxDupe()">⊕ Duplicate</div>
   <div class="ci dng" onclick="ctxDel()">✕ Delete</div>
+</div>
+
+<!-- IMAGE PREVIEW MODAL -->
+<div class="mo" id="imgModal" onclick="closeMO(event,'imgModal')">
+  <div class="md" style="max-width:100%;width:100%;">
+    <div class="mh"></div>
+    <img id="imgPreview" style="width:100%;height:auto;border-radius:12px;margin:20px;">
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -654,7 +662,7 @@ function cardHTML(n,q){
   const items=n.items.map((it,i)=>{
     const ac=(it.attachments||[]).length,hr=!!it.reminder;
     const badges=`${ac?`<span class="ni-b has" onclick="openDetail('${n.id}',${i})">📎${ac}</span>`:''}${hr?`<span class="ni-b rem" onclick="openDetail('${n.id}',${i})">🔔</span>`:''}${!ac&&!hr?`<span class="ni-b" onclick="openDetail('${n.id}',${i})">+</span>`:''}`;
-    return `<div class="ni"><div class="ni-chk${it.done?' ck':''}" onclick="toggle('${n.id}',${i})"></div><span class="ni-txt${it.done?' dn':''}" style="color:${it.done?'var(--text3)':it.color||'var(--text)'}">${hl(it.text,q)}</span><div class="ni-badges">${badges}</div></div>`;
+    return `<div class="ni"><div class="ni-chk${it.done?' ck':''}" onclick="toggle('${n.id}',${i})"></div><span class="ni-txt${it.done?' dn':''}" style="color:${it.done?'var(--text3)':it.color||'var(--text)'}">${hl(it.text,q)}</span><div class="ni-badges">${badges}<span class="ni-b" style="color:#ff3b9a;background:rgba(255,59,154,0.1);border-color:rgba(255,59,154,0.3);cursor:pointer" onclick="delItem('${n.id}',${i})">✕</span></div></div>`;
   }).join('');
   const rem=n.reminder?`<div class="nc-rem">🔔 ${fmtR(n.reminder,n.remRep)}</div>`:'';
   return `<div class="nc" data-id="${n.id}" draggable="true">
@@ -680,6 +688,7 @@ function cardHTML(n,q){
   </div>`;
 }
 function toggle(nid,i){const n=notes.find(x=>x.id===nid);if(!n)return;n.items[i].done=!n.items[i].done;sv();renderNotes();}
+function delItem(nid,i){if(!confirm('Delete this item?'))return;const n=notes.find(x=>x.id===nid);if(!n)return;n.items.splice(i,1);sv();renderNotes();}
 function addItem(nid){const t=prompt('New item:');if(!t||!t.trim())return;const n=notes.find(x=>x.id===nid);if(!n)return;n.items.push({text:t.trim(),color:'#e8f0ff',done:false,attachments:[],reminder:'',remRep:'once'});sv();renderNotes();}
 
 function bindDrag(){
@@ -814,14 +823,37 @@ function saveDetail(){
   n.items[dIdx].reminder=rd;n.items[dIdx].remRep=rr;
   sv();renderNotes();closeDetailModal();if(rd)schedR(rd,rr,n.items[dIdx].text);
 }
-function handleFiles(e){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{dAttach.push({name:f.name,type:f.type,dataUrl:ev.target.result});renderAttach();};r.readAsDataURL(f);});e.target.value='';}
-function renderAttach(){
+function handleFiles(e){
+  Array.from(e.target.files).forEach(f=>{
+    if(f.size>5000000){showToast('File too large (max 5MB)');return;}
+    const r=new FileReader();
+    r.onload=ev=>{
+      dAttach.push({name:f.name,type:f.type,dataUrl:ev.target.result});
+      renderAttach();
+      showToast('✓ '+f.name);
+    };
+    r.readAsDataURL(f);
+  });
+  e.target.value='';
+}
+function addFileNote(){
+  const name=document.getElementById('fileNoteName').value.trim();
+  if(!name){showToast('Enter file name');return;}
+  dFileNotes.push(name);
+  renderFileNotes();
+}
+function delFileNote(i){
+  dFileNotes.splice(i,1);
+  renderFileNotes();
+}
   document.getElementById('attachGrid').innerHTML=dAttach.map((a,i)=>{
-    if(a.type.startsWith('image/'))return `<div class="ath"><img src="${a.dataUrl}"><div class="rm" onclick="rmA(${i})">✕</div></div>`;
+    if(a.type.startsWith('image/'))return `<div class="ath" style="cursor:pointer" onclick="previewImg('${a.dataUrl}')"><img src="${a.dataUrl}"><div class="rm" onclick="event.stopPropagation();rmA(${i})">✕</div></div>`;
     const ic={'pdf':'📄','doc':'📝','docx':'📝','xls':'📊','xlsx':'📊'}[a.name.split('.').pop()]||'📎';
-    return `<div class="ath"><span class="ico">${ic}</span><div class="fn">${a.name}</div><div class="rm" onclick="rmA(${i})">✕</div></div>`;
+    return `<div class="ath" style="cursor:pointer" onclick="downloadFile('${a.dataUrl}','${a.name}')"><span class="ico">${ic}</span><div class="fn">${a.name}</div><div class="rm" onclick="event.stopPropagation();rmA(${i})">✕</div></div>`;
   }).join('');
 }
+function previewImg(dataUrl){document.getElementById('imgPreview').src=dataUrl;document.getElementById('imgModal').classList.add('on');}
+function downloadFile(dataUrl,name){const a=document.createElement('a');a.href=dataUrl;a.download=name;a.click();}
 function rmA(i){dAttach.splice(i,1);renderAttach();}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500);}
 
